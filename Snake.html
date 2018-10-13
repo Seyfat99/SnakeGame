@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="Snake.css">
+</head>
+
+<body onload="startGame();">
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext('2d');
+        const canvasW = canvas.width;
+        const canvasH = canvas.height;
+        let direction
+        let food;
+        const cellWidth = 15;
+        let snakeArray = [];
+
+        const startGame = () => {
+            direction = 'right'
+            createSnake()
+            createFood()
+            // paintSnake()
+            setInterval(paint, 130);
+             setInterval(() => {
+                for (let i = 0; i < snakeArray.length; i++) {
+                paintBlack(snakeArray[i].x, snakeArray[i].y)
+            }
+             },120)
+        }
+
+        const createSnake = () => {
+            let snakeLength = 5
+            for (let i = snakeLength - 1; i >= 0; i--) {
+                snakeArray.push({ x: i, y: 0 })
+            }
+            console.log(snakeArray)
+        }
+
+        const createFood = () => {
+            food = {
+                //dividing the canvas width with the cell width to get the individaul area of randomized food
+                x: Math.round(Math.random() * (canvasW - cellWidth) / cellWidth),
+                y: Math.round(Math.random() * (canvasH - cellWidth) / cellWidth)
+            }
+        }
+
+        const paint = () => {
+
+            let snakeHeadX = snakeArray[0].x
+            let snakeHeadY = snakeArray[0].y
+
+            if (direction === 'right') {
+                snakeHeadX++
+            } else if (direction === 'left') {
+                snakeHeadX--
+            } else if (direction === 'down') {
+                snakeHeadY++
+            } else if (direction === 'up') {
+                snakeHeadY--
+            }
+
+            if (snakeHeadX === food.x && snakeHeadY === food.y) {
+                var tail = { x: snakeHeadX, y: snakeHeadY }
+                createFood()
+            } else {
+                var tail = snakeArray.pop();
+                tail.x = snakeHeadX; tail.y = snakeHeadY;
+            }
+            snakeArray.unshift(tail)
+            
+            
+            for (let i = 0; i < snakeArray.length; i++) {
+                paintCell(snakeArray[i].x, snakeArray[i].y)
+            }
+
+            paintCell(food.x, food.y)
+
+
+        }
+        const paintBlack = (x, y) => {
+            ctx.fillStyle = "black";
+            ctx.clearRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth)
+        }
+
+        const paintCell = (x, y) => {
+            ctx.fillStyle = "green";
+            ctx.fillRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth)
+            // ctx.strokeStyle = "white"
+            // ctx.strokeRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth)
+        }
+
+        window.addEventListener('keydown', e => {
+
+            let key = e.keyCode
+            if (key === 37 && direction !== 'right') {
+                direction = 'left'
+                console.log(key)
+                console.log(direction)
+            } else if (key === 38 && direction !== 'down') {
+                direction = 'up'
+                console.log(key)
+                console.log(direction)
+            } else if (key === 39 && direction !== 'left') {
+                direction = 'right'
+                console.log(key)
+                console.log(direction)
+            } else if (key === 40 && direction !== 'up') {
+                direction = 'down'
+                console.log(key)
+                console.log(direction)
+            }
+        })
+
+
+    </script>
+
+</body>
+
+</html>
